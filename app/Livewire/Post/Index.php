@@ -12,11 +12,11 @@ class Index extends Component
 
     public $search = '';
 
-    protected $updatesQueryString = ['search']; // Supaya parameter pencarian tersimpan di URL
+    protected $queryString = ['search'];
 
     public function updatingSearch()
     {
-        $this->resetPage(); // Reset pagination saat pencarian berubah
+        $this->resetPage();
     }
 
     public function render()
