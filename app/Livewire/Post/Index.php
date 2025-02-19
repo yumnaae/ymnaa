@@ -10,25 +10,22 @@ class Index extends Component
 {
     use WithPagination;
 
-    public $search = '';
+    public $search;
 
-    protected $queryString = ['search'];
+    // protected $queryString = ['search'];
 
-    public function updatingSearch()
-    {
-        $this->resetPage();
-    }
+    // public function updatingSearch()
+    // {
+    //     $this->resetPage();
+    // }
 
     public function render()
     {
-        $posts = Post::query()
-            ->when($this->search, function ($query) {
-                $query->where('title', 'like', '%' . $this->search . '%')
-                      ->orWhere('description', 'like', '%' . $this->search . '%');
-            })
-            ->latest()
-            ->paginate(5);
+        return view('livewire.post.index',[
+            'posts'=>$this->search === null ? 
+                Post::latest()->paginate(3) : 
+                Post::latest()->where('title','like','%'.$this->search.'%')->paginate(2)
 
-        return view('livewire.post.index', compact('posts'));
+        ]);
     }
 }

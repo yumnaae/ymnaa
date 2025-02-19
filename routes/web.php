@@ -3,9 +3,10 @@
 use App\Livewire\Post\Create;
 use App\Livewire\Post\Edit;
 use App\Livewire\Post\Index;
+use App\Livewire\Post\Show;
 use App\Models\Post;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 // Default Route
 Route::get('/', function () {
@@ -21,61 +22,52 @@ Route::middleware([
     // Dashboard Route
     Route::get('/dashboard', function () {
         return view('dashboard');
-})->name('dashboard');
+    })->name('dashboard');
 
-// Post Routes (Livewire Components)
-Route::get('/post.index', Index::class)->name('post.index');
-Route::get('/post.create', Create::class)->name('post.create');
-Route::get('/post.edit/{id}', Edit::class)->name('post.edit');
+    // Post Routes (Livewire Components)
+    Route::get('/post.index', Index::class)->name('post.index');
+    Route::get('/post.create', Create::class)->name('post.create');
+    Route::get('/post.edit/{id}', Edit::class)->name('post.edit');
+    Route::get('/post.show/{id}', Show::class)->name('post.show'); // Livewire Show Component
 
-// Create Post (Form submission)
-Route::post('/posts', function (Request $request) {
-    // Validate incoming data
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
-    ]);
+    // Create Post (Form submission)
+    Route::post('/post', function (Request $request) {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
 
-    // Create a new post
-    $post = new Post();
-    $post->title = $request->title;
-    $post->description = $request->description;
-    $post->save();
+        Post::create([
+            'title' => $request->title,
+            'description' => $request->description,
+        ]);
 
-    // Redirect back with success message
-    return redirect()->route('post.index')->with('success', 'Post berhasil dibuat!');
-})->name('post.store');
+        return redirect()->route('post.index')->with('success', 'Post berhasil dibuat!');
+    })->name('post.store');
 
-// Edit Post (update)
-Route::put('/posts/{id}', function (Request $request, $id) {
-    // Find the post by ID
-    $post = Post::findOrFail($id);
+    // Edit Post (Update)
+    Route::put('/post/{id}', function (Request $request, $id) {
+        $post = Post::findOrFail($id);
 
-    // Validate incoming data
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'required|string',
-    ]);
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
 
-    // Update the post data
-    $post->title = $request->title;
-    $post->description = $request->description;
-    $post->save();
+        $post->update([
+            'title' => $request->title,
+            'description' => $request->description,
+        ]);
 
-    // Redirect to post index with success message
-    return redirect()->route('post.index')->with('success', 'Post berhasil diperbarui!');
-})->name('post.update');
+        return redirect()->route('post.index')->with('success', 'Post berhasil diperbarui!');
+    })->name('post.update');
 
-// Delete Post
-Route::delete('/posts/{id}', function ($id) {
-    // Find the post by ID
-    $post = Post::findOrFail($id);
-        
-    // Delete the post
-    $post->delete();
+    // Delete Post
+    Route::delete('/post/{id}', function ($id) {
+        $post = Post::findOrFail($id);
+        $post->delete();
 
-    // Redirect back to the post index with a success message
-    return redirect()->route('post.index')->with('success', 'Post berhasil dihapus!');
-})->name('post.destroy');
+        return redirect()->route('post.index')->with('success', 'Post berhasil dihapus!');
+    })->name('post.destroy');
 
 });
