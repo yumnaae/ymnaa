@@ -14,6 +14,7 @@ class Edit extends Component
         // Find the post by its ID
         $this->post = Post::findOrFail($id);
     }
+    
     public function render()
     {
         return view('livewire.post.edit');
